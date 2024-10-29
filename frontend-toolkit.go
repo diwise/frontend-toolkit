@@ -15,7 +15,7 @@ type AssetLoader interface {
 	LoadFromSha256(sha string) (Asset, error)
 }
 
-type Bundle interface {
+type LocaleBundle interface {
 	For(acceptLanguage string) Localizer
 }
 

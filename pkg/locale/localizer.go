@@ -22,7 +22,7 @@ type wrapper struct {
 	impl_ *impl
 }
 
-func NewLocalizer(assetPath string, languages ...string) fetk.Bundle {
+func NewLocalizer(assetPath string, languages ...string) fetk.LocaleBundle {
 
 	if len(languages) == 0 {
 		panic("at least one language must be specified")

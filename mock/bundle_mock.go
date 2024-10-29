@@ -8,22 +8,22 @@ import (
 	"sync"
 )
 
-// BundleMock is a mock implementation of frontendtoolkit.Bundle.
+// LocaleBundleMock is a mock implementation of frontendtoolkit.LocaleBundle.
 //
-//	func TestSomethingThatUsesBundle(t *testing.T) {
+//	func TestSomethingThatUsesLocaleBundle(t *testing.T) {
 //
-//		// make and configure a mocked frontendtoolkit.Bundle
-//		mockedBundle := &BundleMock{
+//		// make and configure a mocked frontendtoolkit.LocaleBundle
+//		mockedLocaleBundle := &LocaleBundleMock{
 //			ForFunc: func(acceptLanguage string) frontendtoolkit.Localizer {
 //				panic("mock out the For method")
 //			},
 //		}
 //
-//		// use mockedBundle in code that requires frontendtoolkit.Bundle
+//		// use mockedLocaleBundle in code that requires frontendtoolkit.LocaleBundle
 //		// and then make assertions.
 //
 //	}
-type BundleMock struct {
+type LocaleBundleMock struct {
 	// ForFunc mocks the For method.
 	ForFunc func(acceptLanguage string) frontendtoolkit.Localizer
 
@@ -39,7 +39,7 @@ type BundleMock struct {
 }
 
 // For calls ForFunc.
-func (mock *BundleMock) For(acceptLanguage string) frontendtoolkit.Localizer {
+func (mock *LocaleBundleMock) For(acceptLanguage string) frontendtoolkit.Localizer {
 	callInfo := struct {
 		AcceptLanguage string
 	}{
@@ -60,8 +60,8 @@ func (mock *BundleMock) For(acceptLanguage string) frontendtoolkit.Localizer {
 // ForCalls gets all the calls that were made to For.
 // Check the length with:
 //
-//	len(mockedBundle.ForCalls())
-func (mock *BundleMock) ForCalls() []struct {
+//	len(mockedLocaleBundle.ForCalls())
+func (mock *LocaleBundleMock) ForCalls() []struct {
 	AcceptLanguage string
 } {
 	var calls []struct {
