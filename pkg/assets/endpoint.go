@@ -4,8 +4,10 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"math"
 	"net/http"
 	"strings"
+	"time"
 
 	fetk "github.com/diwise/frontend-toolkit"
 )
@@ -20,21 +22,25 @@ type redirect struct {
 type ep_conf struct {
 	mux *http.ServeMux
 
+	cacheControlHeader string
+
 	redirects []redirect
 }
 
 type EndpointOption func(*ep_conf)
+
+func WithImmutableExpiry(maxAge time.Duration) EndpointOption {
+	return func(cfg *ep_conf) {
+		seconds := int(math.RoundToEven(maxAge.Seconds()))
+		cfg.cacheControlHeader = fmt.Sprintf("public,max-age=%d,immutable", seconds)
+	}
+}
 
 func WithMux(mux *http.ServeMux) EndpointOption {
 	return func(cfg *ep_conf) {
 		cfg.mux = mux
 	}
 }
-
-// /favicon.ico -> /icons/favicon.ico http.StatusMovedPermanently
-// 	WithRedirect("/favicon.ico", "/icons/favicon.ico", http.StatusMovedPermanently)
-// /assets/<sha>/images/{img} -> /images/leaflet-"+image http.StatusFound
-// 	WithRedirect()
 
 func WithRedirect(from, to string, code int) EndpointOption {
 	wildcards := extractWildcards(from)
@@ -86,6 +92,11 @@ func RegisterEndpoints(_ context.Context, assetLoader fetk.AssetLoader, opts ...
 
 		w.Header().Set("Content-Type", a.ContentType())
 		w.Header().Set("Content-Length", fmt.Sprintf("%d", a.ContentLength()))
+
+		if cfg.cacheControlHeader != "" {
+			w.Header().Set("Cache-Control", cfg.cacheControlHeader)
+		}
+
 		w.WriteHeader(http.StatusOK)
 		w.Write(a.Body())
 	})

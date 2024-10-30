@@ -5,6 +5,7 @@ import (
 	"net/http"
 	"net/http/httptest"
 	"testing"
+	"time"
 
 	frontendtoolkit "github.com/diwise/frontend-toolkit"
 	"github.com/diwise/frontend-toolkit/mock"
@@ -39,6 +40,7 @@ func TestRegisterEndpoints(t *testing.T) {
 	}
 
 	err := RegisterEndpoints(context.Background(), loader,
+		WithImmutableExpiry(365*24*time.Hour),
 		WithMux(mux),
 		WithRedirect("/favicon.ico", "/icons/favicon.ico", http.StatusMovedPermanently),
 		WithRedirect("/assets/1337/images/{img}", "/images/leaflet-{img}", http.StatusFound),
