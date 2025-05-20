@@ -61,6 +61,13 @@ func NewLoader(ctx context.Context, opts ...LoaderOptionFunc) (tk.AssetLoader, e
 		opt(loader)
 	}
 
+	fixpath := func(p string) string {
+		if os.PathSeparator != '/' {
+			p = strings.ReplaceAll(p, string(os.PathListSeparator), "/")
+		}
+		return p
+	}
+
 	filepath.Walk(loader.basePath,
 		func(path string, info os.FileInfo, err error) error {
 			if err != nil {
@@ -70,6 +77,8 @@ func NewLoader(ctx context.Context, opts ...LoaderOptionFunc) (tk.AssetLoader, e
 			if info.IsDir() {
 				return nil
 			}
+
+			path = fixpath(path)
 
 			for _, shouldBeExcluded := range loader.exclude {
 				if shouldBeExcluded(path, info.Name()) {
