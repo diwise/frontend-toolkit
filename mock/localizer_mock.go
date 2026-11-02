@@ -5,13 +5,19 @@ package mock
 
 import (
 	"sync"
+
+	"github.com/diwise/frontend-toolkit/pkg/locale"
 )
 
-// LocalizerMock is a mock implementation of frontendtoolkit.Localizer.
+// Ensure, that LocalizerMock does implement locale.Localizer.
+// If this is not the case, regenerate this file with moq.
+var _ locale.Localizer = &LocalizerMock{}
+
+// LocalizerMock is a mock implementation of locale.Localizer.
 //
 //	func TestSomethingThatUsesLocalizer(t *testing.T) {
 //
-//		// make and configure a mocked frontendtoolkit.Localizer
+//		// make and configure a mocked locale.Localizer
 //		mockedLocalizer := &LocalizerMock{
 //			GetFunc: func(s string) string {
 //				panic("mock out the Get method")
@@ -21,7 +27,7 @@ import (
 //			},
 //		}
 //
-//		// use mockedLocalizer in code that requires frontendtoolkit.Localizer
+//		// use mockedLocalizer in code that requires locale.Localizer
 //		// and then make assertions.
 //
 //	}
@@ -53,6 +59,9 @@ type LocalizerMock struct {
 
 // Get calls GetFunc.
 func (mock *LocalizerMock) Get(s string) string {
+	if mock.GetFunc == nil {
+		panic("LocalizerMock.GetFunc: method is nil but Localizer.Get was just called")
+	}
 	callInfo := struct {
 		S string
 	}{
@@ -61,12 +70,6 @@ func (mock *LocalizerMock) Get(s string) string {
 	mock.lockGet.Lock()
 	mock.calls.Get = append(mock.calls.Get, callInfo)
 	mock.lockGet.Unlock()
-	if mock.GetFunc == nil {
-		var (
-			sOut string
-		)
-		return sOut
-	}
 	return mock.GetFunc(s)
 }
 
@@ -88,6 +91,9 @@ func (mock *LocalizerMock) GetCalls() []struct {
 
 // GetWithData calls GetWithDataFunc.
 func (mock *LocalizerMock) GetWithData(s string, stringToIfaceVal map[string]any) string {
+	if mock.GetWithDataFunc == nil {
+		panic("LocalizerMock.GetWithDataFunc: method is nil but Localizer.GetWithData was just called")
+	}
 	callInfo := struct {
 		S                string
 		StringToIfaceVal map[string]any
@@ -98,12 +104,6 @@ func (mock *LocalizerMock) GetWithData(s string, stringToIfaceVal map[string]any
 	mock.lockGetWithData.Lock()
 	mock.calls.GetWithData = append(mock.calls.GetWithData, callInfo)
 	mock.lockGetWithData.Unlock()
-	if mock.GetWithDataFunc == nil {
-		var (
-			sOut string
-		)
-		return sOut
-	}
 	return mock.GetWithDataFunc(s, stringToIfaceVal)
 }
 

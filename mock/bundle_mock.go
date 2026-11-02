@@ -4,28 +4,52 @@
 package mock
 
 import (
-	"github.com/diwise/frontend-toolkit"
+	"iter"
 	"sync"
+
+	"github.com/diwise/frontend-toolkit/pkg/locale"
 )
 
-// LocaleBundleMock is a mock implementation of frontendtoolkit.LocaleBundle.
+// Ensure, that LocaleBundleMock does implement locale.LocaleBundle.
+// If this is not the case, regenerate this file with moq.
+var _ locale.LocaleBundle = &LocaleBundleMock{}
+
+// LocaleBundleMock is a mock implementation of locale.LocaleBundle.
 //
 //	func TestSomethingThatUsesLocaleBundle(t *testing.T) {
 //
-//		// make and configure a mocked frontendtoolkit.LocaleBundle
+//		// make and configure a mocked locale.LocaleBundle
 //		mockedLocaleBundle := &LocaleBundleMock{
-//			ForFunc: func(acceptLanguage string) frontendtoolkit.Localizer {
+//			ForFunc: func(acceptLanguage string) locale.Localizer {
 //				panic("mock out the For method")
+//			},
+//			ForAllFunc: func(languages []string) locale.Localizer {
+//				panic("mock out the ForAll method")
+//			},
+//			GetAllFunc: func(id string) iter.Seq2[string, string] {
+//				panic("mock out the GetAll method")
+//			},
+//			LanguagesFunc: func() []string {
+//				panic("mock out the Languages method")
 //			},
 //		}
 //
-//		// use mockedLocaleBundle in code that requires frontendtoolkit.LocaleBundle
+//		// use mockedLocaleBundle in code that requires locale.LocaleBundle
 //		// and then make assertions.
 //
 //	}
 type LocaleBundleMock struct {
 	// ForFunc mocks the For method.
-	ForFunc func(acceptLanguage string) frontendtoolkit.Localizer
+	ForFunc func(acceptLanguage string) locale.Localizer
+
+	// ForAllFunc mocks the ForAll method.
+	ForAllFunc func(languages []string) locale.Localizer
+
+	// GetAllFunc mocks the GetAll method.
+	GetAllFunc func(id string) iter.Seq2[string, string]
+
+	// LanguagesFunc mocks the Languages method.
+	LanguagesFunc func() []string
 
 	// calls tracks calls to the methods.
 	calls struct {
@@ -34,12 +58,31 @@ type LocaleBundleMock struct {
 			// AcceptLanguage is the acceptLanguage argument value.
 			AcceptLanguage string
 		}
+		// ForAll holds details about calls to the ForAll method.
+		ForAll []struct {
+			// Languages is the languages argument value.
+			Languages []string
+		}
+		// GetAll holds details about calls to the GetAll method.
+		GetAll []struct {
+			// ID is the id argument value.
+			ID string
+		}
+		// Languages holds details about calls to the Languages method.
+		Languages []struct {
+		}
 	}
-	lockFor sync.RWMutex
+	lockFor       sync.RWMutex
+	lockForAll    sync.RWMutex
+	lockGetAll    sync.RWMutex
+	lockLanguages sync.RWMutex
 }
 
 // For calls ForFunc.
-func (mock *LocaleBundleMock) For(acceptLanguage string) frontendtoolkit.Localizer {
+func (mock *LocaleBundleMock) For(acceptLanguage string) locale.Localizer {
+	if mock.ForFunc == nil {
+		panic("LocaleBundleMock.ForFunc: method is nil but LocaleBundle.For was just called")
+	}
 	callInfo := struct {
 		AcceptLanguage string
 	}{
@@ -48,12 +91,6 @@ func (mock *LocaleBundleMock) For(acceptLanguage string) frontendtoolkit.Localiz
 	mock.lockFor.Lock()
 	mock.calls.For = append(mock.calls.For, callInfo)
 	mock.lockFor.Unlock()
-	if mock.ForFunc == nil {
-		var (
-			localizerOut frontendtoolkit.Localizer
-		)
-		return localizerOut
-	}
 	return mock.ForFunc(acceptLanguage)
 }
 
@@ -70,5 +107,96 @@ func (mock *LocaleBundleMock) ForCalls() []struct {
 	mock.lockFor.RLock()
 	calls = mock.calls.For
 	mock.lockFor.RUnlock()
+	return calls
+}
+
+// ForAll calls ForAllFunc.
+func (mock *LocaleBundleMock) ForAll(languages []string) locale.Localizer {
+	if mock.ForAllFunc == nil {
+		panic("LocaleBundleMock.ForAllFunc: method is nil but LocaleBundle.ForAll was just called")
+	}
+	callInfo := struct {
+		Languages []string
+	}{
+		Languages: languages,
+	}
+	mock.lockForAll.Lock()
+	mock.calls.ForAll = append(mock.calls.ForAll, callInfo)
+	mock.lockForAll.Unlock()
+	return mock.ForAllFunc(languages)
+}
+
+// ForAllCalls gets all the calls that were made to ForAll.
+// Check the length with:
+//
+//	len(mockedLocaleBundle.ForAllCalls())
+func (mock *LocaleBundleMock) ForAllCalls() []struct {
+	Languages []string
+} {
+	var calls []struct {
+		Languages []string
+	}
+	mock.lockForAll.RLock()
+	calls = mock.calls.ForAll
+	mock.lockForAll.RUnlock()
+	return calls
+}
+
+// GetAll calls GetAllFunc.
+func (mock *LocaleBundleMock) GetAll(id string) iter.Seq2[string, string] {
+	if mock.GetAllFunc == nil {
+		panic("LocaleBundleMock.GetAllFunc: method is nil but LocaleBundle.GetAll was just called")
+	}
+	callInfo := struct {
+		ID string
+	}{
+		ID: id,
+	}
+	mock.lockGetAll.Lock()
+	mock.calls.GetAll = append(mock.calls.GetAll, callInfo)
+	mock.lockGetAll.Unlock()
+	return mock.GetAllFunc(id)
+}
+
+// GetAllCalls gets all the calls that were made to GetAll.
+// Check the length with:
+//
+//	len(mockedLocaleBundle.GetAllCalls())
+func (mock *LocaleBundleMock) GetAllCalls() []struct {
+	ID string
+} {
+	var calls []struct {
+		ID string
+	}
+	mock.lockGetAll.RLock()
+	calls = mock.calls.GetAll
+	mock.lockGetAll.RUnlock()
+	return calls
+}
+
+// Languages calls LanguagesFunc.
+func (mock *LocaleBundleMock) Languages() []string {
+	if mock.LanguagesFunc == nil {
+		panic("LocaleBundleMock.LanguagesFunc: method is nil but LocaleBundle.Languages was just called")
+	}
+	callInfo := struct {
+	}{}
+	mock.lockLanguages.Lock()
+	mock.calls.Languages = append(mock.calls.Languages, callInfo)
+	mock.lockLanguages.Unlock()
+	return mock.LanguagesFunc()
+}
+
+// LanguagesCalls gets all the calls that were made to Languages.
+// Check the length with:
+//
+//	len(mockedLocaleBundle.LanguagesCalls())
+func (mock *LocaleBundleMock) LanguagesCalls() []struct {
+} {
+	var calls []struct {
+	}
+	mock.lockLanguages.RLock()
+	calls = mock.calls.Languages
+	mock.lockLanguages.RUnlock()
 	return calls
 }
