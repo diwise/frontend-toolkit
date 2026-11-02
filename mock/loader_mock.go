@@ -4,34 +4,35 @@
 package mock
 
 import (
-	"github.com/diwise/frontend-toolkit"
 	"sync"
+
+	"github.com/diwise/frontend-toolkit/pkg/assets"
 )
 
-// LoaderMock is a mock implementation of frontendtoolkit.Loader.
+// LoaderMock is a mock implementation of assets.Loader.
 //
 //	func TestSomethingThatUsesLoader(t *testing.T) {
 //
-//		// make and configure a mocked frontendtoolkit.Loader
+//		// make and configure a mocked assets.Loader
 //		mockedLoader := &LoaderMock{
-//			LoadFunc: func(name string) frontendtoolkit.Asset {
+//			LoadFunc: func(name string) assets.Asset {
 //				panic("mock out the Load method")
 //			},
-//			LoadFromSha256Func: func(sha string) (frontendtoolkit.Asset, error) {
+//			LoadFromSha256Func: func(sha string) (assets.Asset, error) {
 //				panic("mock out the LoadFromSha256 method")
 //			},
 //		}
 //
-//		// use mockedLoader in code that requires frontendtoolkit.Loader
+//		// use mockedLoader in code that requires assets.Loader
 //		// and then make assertions.
 //
 //	}
 type LoaderMock struct {
 	// LoadFunc mocks the Load method.
-	LoadFunc func(name string) frontendtoolkit.Asset
+	LoadFunc func(name string) assets.Asset
 
 	// LoadFromSha256Func mocks the LoadFromSha256 method.
-	LoadFromSha256Func func(sha string) (frontendtoolkit.Asset, error)
+	LoadFromSha256Func func(sha string) (assets.Asset, error)
 
 	// calls tracks calls to the methods.
 	calls struct {
@@ -51,7 +52,7 @@ type LoaderMock struct {
 }
 
 // Load calls LoadFunc.
-func (mock *LoaderMock) Load(name string) frontendtoolkit.Asset {
+func (mock *LoaderMock) Load(name string) assets.Asset {
 	callInfo := struct {
 		Name string
 	}{
@@ -62,7 +63,7 @@ func (mock *LoaderMock) Load(name string) frontendtoolkit.Asset {
 	mock.lockLoad.Unlock()
 	if mock.LoadFunc == nil {
 		var (
-			assetOut frontendtoolkit.Asset
+			assetOut assets.Asset
 		)
 		return assetOut
 	}
@@ -86,7 +87,7 @@ func (mock *LoaderMock) LoadCalls() []struct {
 }
 
 // LoadFromSha256 calls LoadFromSha256Func.
-func (mock *LoaderMock) LoadFromSha256(sha string) (frontendtoolkit.Asset, error) {
+func (mock *LoaderMock) LoadFromSha256(sha string) (assets.Asset, error) {
 	callInfo := struct {
 		Sha string
 	}{
@@ -97,7 +98,7 @@ func (mock *LoaderMock) LoadFromSha256(sha string) (frontendtoolkit.Asset, error
 	mock.lockLoadFromSha256.Unlock()
 	if mock.LoadFromSha256Func == nil {
 		var (
-			assetOut frontendtoolkit.Asset
+			assetOut assets.Asset
 			errOut   error
 		)
 		return assetOut, errOut

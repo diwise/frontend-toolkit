@@ -7,6 +7,21 @@ import (
 
 var ErrNotFound = errors.New("not found")
 
+type Asset interface {
+	Body() []byte
+	ContentLength() int
+	ContentType() string
+	Path() string
+	SHA256() string
+}
+
+type AssetLoaderFunc func(name string) Asset
+
+type AssetLoader interface {
+	Load(name string) Asset
+	LoadFromSha256(sha string) (Asset, error)
+}
+
 type asset struct {
 	path        string
 	sha256      string

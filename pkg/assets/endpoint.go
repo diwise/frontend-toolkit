@@ -8,11 +8,9 @@ import (
 	"net/http"
 	"strings"
 	"time"
-
-	fetk "github.com/diwise/frontend-toolkit"
 )
 
-type AssetHandlerFunc func(fetk.AssetLoader) http.HandlerFunc
+type AssetHandlerFunc func(AssetLoader) http.HandlerFunc
 
 type redirect struct {
 	path    string
@@ -43,10 +41,10 @@ func WithMux(mux *http.ServeMux) EndpointOption {
 }
 
 func WithRedirect(from, to string, code int) EndpointOption {
-	wildcards := extractWildcards(from)
+	wildcards := ExtractWildcards(from)
 
 	return func(cfg *ep_conf) {
-		handler := func(assetLoader fetk.AssetLoader) http.HandlerFunc {
+		handler := func(assetLoader AssetLoader) http.HandlerFunc {
 			return func(w http.ResponseWriter, r *http.Request) {
 				redirectPath := to
 				for _, wc := range wildcards {
@@ -62,7 +60,7 @@ func WithRedirect(from, to string, code int) EndpointOption {
 	}
 }
 
-func RegisterEndpoints(_ context.Context, assetLoader fetk.AssetLoader, opts ...EndpointOption) error {
+func RegisterEndpoints(_ context.Context, assetLoader AssetLoader, opts ...EndpointOption) error {
 
 	cfg := &ep_conf{
 		mux: http.DefaultServeMux,
@@ -104,7 +102,7 @@ func RegisterEndpoints(_ context.Context, assetLoader fetk.AssetLoader, opts ...
 	return nil
 }
 
-func extractWildcards(path string) []string {
+func ExtractWildcards(path string) []string {
 	wildcards := make([]string, 0, 5)
 	curlyIdx := strings.Index(path, "{")
 

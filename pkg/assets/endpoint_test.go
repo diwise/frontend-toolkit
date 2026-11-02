@@ -1,4 +1,4 @@
-package assets
+package assets_test
 
 import (
 	"context"
@@ -7,15 +7,15 @@ import (
 	"testing"
 	"time"
 
-	frontendtoolkit "github.com/diwise/frontend-toolkit"
 	"github.com/diwise/frontend-toolkit/mock"
+	"github.com/diwise/frontend-toolkit/pkg/assets"
 
 	"github.com/matryer/is"
 )
 
 func TestWC(t *testing.T) {
 	is := is.New(t)
-	wc := extractWildcards("/assets/{sha}/{filename}")
+	wc := assets.ExtractWildcards("/assets/{sha}/{filename}")
 
 	is.Equal(len(wc), 2)
 	is.Equal(wc[0], "sha")
@@ -35,15 +35,15 @@ func TestRegisterEndpoints(t *testing.T) {
 	}
 
 	loader := &mock.LoaderMock{
-		LoadFunc:           func(name string) frontendtoolkit.Asset { return asset },
-		LoadFromSha256Func: func(string) (frontendtoolkit.Asset, error) { return asset, nil },
+		LoadFunc:           func(name string) assets.Asset { return asset },
+		LoadFromSha256Func: func(string) (assets.Asset, error) { return asset, nil },
 	}
 
-	err := RegisterEndpoints(context.Background(), loader,
-		WithImmutableExpiry(365*24*time.Hour),
-		WithMux(mux),
-		WithRedirect("/favicon.ico", "/icons/favicon.ico", http.StatusMovedPermanently),
-		WithRedirect("/assets/1337/images/{img}", "/images/leaflet-{img}", http.StatusFound),
+	err := assets.RegisterEndpoints(context.Background(), loader,
+		assets.WithImmutableExpiry(365*24*time.Hour),
+		assets.WithMux(mux),
+		assets.WithRedirect("/favicon.ico", "/icons/favicon.ico", http.StatusMovedPermanently),
+		assets.WithRedirect("/assets/1337/images/{img}", "/images/leaflet-{img}", http.StatusFound),
 	)
 	is.NoErr(err)
 

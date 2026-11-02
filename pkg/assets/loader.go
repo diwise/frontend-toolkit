@@ -10,15 +10,13 @@ import (
 	"path/filepath"
 	"strings"
 	"sync"
-
-	tk "github.com/diwise/frontend-toolkit"
 )
 
 type impl struct {
 	basePath string
 
 	path2sha map[string]string
-	assets   map[string]tk.Asset
+	assets   map[string]Asset
 
 	exclude []func(string, string) bool
 
@@ -49,11 +47,11 @@ func Logger(logger *slog.Logger) LoaderOptionFunc {
 	}
 }
 
-func NewLoader(ctx context.Context, opts ...LoaderOptionFunc) (tk.AssetLoader, error) {
+func NewLoader(ctx context.Context, opts ...LoaderOptionFunc) (AssetLoader, error) {
 	loader := &impl{
 		basePath: ".",
 		path2sha: map[string]string{},
-		assets:   map[string]tk.Asset{},
+		assets:   map[string]Asset{},
 		exclude:  []func(string, string) bool{},
 	}
 
@@ -89,7 +87,7 @@ func NewLoader(ctx context.Context, opts ...LoaderOptionFunc) (tk.AssetLoader, e
 	return loader, nil
 }
 
-func (l *impl) Load(path string) tk.Asset {
+func (l *impl) Load(path string) Asset {
 	l.mu.Lock()
 	defer l.mu.Unlock()
 
@@ -132,7 +130,7 @@ func (l *impl) Load(path string) tk.Asset {
 	return a
 }
 
-func (l *impl) LoadFromSha256(sha string) (tk.Asset, error) {
+func (l *impl) LoadFromSha256(sha string) (Asset, error) {
 	l.mu.Lock()
 	defer l.mu.Unlock()
 

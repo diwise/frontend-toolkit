@@ -4,12 +4,19 @@ import (
 	"fmt"
 	"strings"
 
-	fetk "github.com/diwise/frontend-toolkit"
-
 	"github.com/BurntSushi/toml"
 	"github.com/nicksnyder/go-i18n/v2/i18n"
 	"golang.org/x/text/language"
 )
+
+type LocaleBundle interface {
+	For(acceptLanguage string) Localizer
+}
+
+type Localizer interface {
+	Get(string) string
+	GetWithData(string, map[string]any) string
+}
 
 type impl struct {
 	bundle          *i18n.Bundle
@@ -22,7 +29,7 @@ type wrapper struct {
 	impl_ *impl
 }
 
-func NewLocalizer(assetPath string, languages ...string) fetk.LocaleBundle {
+func NewLocalizer(assetPath string, languages ...string) LocaleBundle {
 
 	if len(languages) == 0 {
 		panic("at least one language must be specified")
@@ -44,7 +51,7 @@ func NewLocalizer(assetPath string, languages ...string) fetk.LocaleBundle {
 	return b
 }
 
-func (l *impl) For(acceptLanguage string) fetk.Localizer {
+func (l *impl) For(acceptLanguage string) Localizer {
 	w := &wrapper{
 		lang:  l.defaultLanguage,
 		impl_: l,

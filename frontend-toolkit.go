@@ -1,25 +1,13 @@
 package frontendtoolkit
 
-type Asset interface {
-	Body() []byte
-	ContentLength() int
-	ContentType() string
-	Path() string
-	SHA256() string
-}
+import (
+	"github.com/diwise/frontend-toolkit/pkg/assets"
+	"github.com/diwise/frontend-toolkit/pkg/locale"
+)
 
-type AssetLoaderFunc func(name string) Asset
+type Asset = assets.Asset
+type AssetLoaderFunc assets.AssetLoaderFunc
+type AssetLoader = assets.AssetLoader
 
-type AssetLoader interface {
-	Load(name string) Asset
-	LoadFromSha256(sha string) (Asset, error)
-}
-
-type LocaleBundle interface {
-	For(acceptLanguage string) Localizer
-}
-
-type Localizer interface {
-	Get(string) string
-	GetWithData(string, map[string]any) string
-}
+type LocaleBundle = locale.LocaleBundle
+type Localizer = locale.Localizer
